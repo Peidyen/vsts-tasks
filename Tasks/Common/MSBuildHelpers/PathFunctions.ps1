@@ -197,3 +197,79 @@ function Get-VisualStudio_15_0 {
         Trace-VstsLeavingInvocation $MyInvocation
     }
 }
+
+function Select-MSBuildPath {
+    [CmdletBinding()]
+    param(
+        [string]$Method,
+        [string]$Location,
+        [string]$PreferredVersion,
+        [string]$Architecture)
+
+    Trace-VstsEnteringInvocation $MyInvocation
+    try {
+        # Default the msbuildLocationMethod if not specified. The input msbuildLocationMethod
+        # was added to the definition after the input msbuildLocation.
+        if ("$Method".ToUpperInvariant() -ne 'LOCATION' -and "$Method".ToUpperInvariant() -ne 'VERSION') {
+            # Infer the msbuildLocationMethod based on the whether msbuildLocation is specified.
+            if ($Location) {
+                $Method = 'location'
+            } else {
+                $Method = 'version'
+            }
+
+            Write-Verbose "Defaulted MSBuild location method to: $Method"
+        }
+
+        if ("$Method".ToUpperInvariant() -eq 'LOCATION') {
+            # Return the location.
+            if ($Location) {
+                return $Location
+            }
+
+            # Fallback to version lookup.
+            Write-Verbose "Location not specified. Looking up by version instead."
+        }
+
+        $specificVersion = $PreferredVersion -and $PreferredVersion -ne 'latest'
+        $versions = '15.0', '14.0', '12.0', '11.0', '10.0' | Where-Object { $_ -ne $PreferredVersion }
+
+        # Look for a specific version of MSBuild.
+        if ($specificVersion) {
+            if (($path = Get-MSBuildPath -Version $PreferredVersion -Architecture $Architecture)) {
+                return $path
+            }
+
+            # Do not fallback from 15.0.
+            if ($PreferredVersion -eq '15.0') {
+                Write-Error (Get-VstsLocString -Key MSBuildNotFoundVersion0Architecture1TryDifferent -ArgumentList $PreferredVersion, $Architecture)
+                return
+            }
+
+            # Attempt to fallback.
+            $versions = $versions | Where-Object { $_ -ne '15.0' } # Fallback is only between 14.0-10.0.
+            Write-Verbose "Version '$PreferredVersion' and architecture '$Architecture' not found. Looking for fallback version."
+        }
+
+        # Look for the latest version of MSBuild.
+        foreach ($version in $versions) {
+            if (($path = Get-MSBuildPath -Version $version -Architecture $Architecture)) {
+                # Warn falling back.
+                if ($specificVersion) {
+                    Write-Warning (Get-VstsLocString -Key UnableToFindMSBuildVersion0Architecture1FallbackVersion2 -ArgumentList $PreferredVersion, $Architecture, $version)
+                }
+
+                return $path
+            }
+        }
+
+        # Error. Not found.
+        if ($specificVersion) {
+            Write-Error (Get-VstsLocString -Key 'MSBuildNotFoundVersion0Architecture1TryDifferent' -ArgumentList $PreferredVersion, $Architecture)
+        } else {
+            Write-Error (Get-VstsLocString -Key 'MSBuildNotFound')
+        }
+    } finally {
+        Trace-VstsLeavingInvocation $MyInvocation
+    }
+}
