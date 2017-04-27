@@ -48,7 +48,7 @@ try {
     # Translate to MSBuild version.
     $msBuildVersion = $null;
     switch ("$vsVersion") {
-        '' { break }
+        '' { $msBuildVersion = '14.0' ; break } # VS wasn't found. Attempt to find MSBuild 14.0 or lower.
         '15.0' { $msBuildVersion = '15.0' ; break }
         '14.0' { $msBuildVersion = '14.0' ; break }
         '12.0' { $msBuildVersion = '12.0' ; break }
