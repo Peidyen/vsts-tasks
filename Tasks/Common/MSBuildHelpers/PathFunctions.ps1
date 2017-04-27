@@ -1,6 +1,11 @@
 ########################################
 # Public functions.
 ########################################
+$script:visualStudioCache = @{ }
+
+########################################
+# Public functions.
+########################################
 function Get-MSBuildPath {
     [CmdletBinding()]
     param(
@@ -170,29 +175,36 @@ function Get-VisualStudio_15_0 {
 
     Trace-VstsEnteringInvocation $MyInvocation
     try {
-        # Query for the latest 15.0.* version.
-        #
-        # Note, even though VS 15 Update 1 is sometimes referred to as "15.1", the actual installation
-        # version number is 15.0.26403.7.
-        #
-        # Also note, the capability is registered as VisualStudio_15.0, so the following code should
-        # query for 15.0.* versions only.
-        Write-Verbose "Getting latest Visual Studio 15 setup instance."
-        $output = New-Object System.Text.StringBuilder
-        Invoke-VstsTool -FileName "$PSScriptRoot\vswhere.exe" -Arguments "-version [15.0,15.1) -latest -format json" -RequireExitCodeZero 2>&1 |
-            ForEach-Object {
-                if ($_ -is [System.Management.Automation.ErrorRecord]) {
-                    Write-Verbose "STDERR: $($_.Exception.Message)"
-                }
-                else {
-                    Write-Verbose $_
-                    $null = $output.AppendLine($_)
-                }
+        if (!$script:visualStudioCache.ContainsKey('15.0')) {
+            try {
+                # Query for the latest 15.0.* version.
+                #
+                # Note, even though VS 15 Update 1 is sometimes referred to as "15.1", the actual installation
+                # version number is 15.0.26403.7.
+                #
+                # Also note, the capability is registered as VisualStudio_15.0, so the following code should
+                # query for 15.0.* versions only.
+                Write-Verbose "Getting latest Visual Studio 15 setup instance."
+                $output = New-Object System.Text.StringBuilder
+                Invoke-VstsTool -FileName "$PSScriptRoot\vswhere.exe" -Arguments "-version [15.0,15.1) -latest -format json" -RequireExitCodeZero 2>&1 |
+                    ForEach-Object {
+                        if ($_ -is [System.Management.Automation.ErrorRecord]) {
+                            Write-Verbose "STDERR: $($_.Exception.Message)"
+                        }
+                        else {
+                            Write-Verbose $_
+                            $null = $output.AppendLine($_)
+                        }
+                    }
+                $script:visualStudioCache['15.0'] = (ConvertFrom-Json -InputObject $output.ToString()) |
+                    Select-Object -First 1
+            } catch {
+                Write-Verbose ($_ | Out-String)
+                $script:visualStudioCache['15.0'] = $null
             }
-        return (ConvertFrom-Json -InputObject $output.ToString()) |
-            Select-Object -First 1
-    } catch {
-        Write-Verbose ($_ | Out-String)
+        }
+
+        return $script:visualStudioCache['15.0']
     } finally {
         Trace-VstsLeavingInvocation $MyInvocation
     }
@@ -232,7 +244,7 @@ function Select-MSBuildPath {
         }
 
         $specificVersion = $PreferredVersion -and $PreferredVersion -ne 'latest'
-        $versions = '15.0', '14.0', '12.0', '11.0', '10.0' | Where-Object { $_ -ne $PreferredVersion }
+        $versions = '15.0', '14.0', '12.0', '4.0' | Where-Object { $_ -ne $PreferredVersion }
 
         # Look for a specific version of MSBuild.
         if ($specificVersion) {
@@ -247,7 +259,7 @@ function Select-MSBuildPath {
             }
 
             # Attempt to fallback.
-            $versions = $versions | Where-Object { $_ -ne '15.0' } # Fallback is only between 14.0-10.0.
+            $versions = $versions | Where-Object { $_ -ne '15.0' } # Fallback is only between 14.0-4.0.
             Write-Verbose "Version '$PreferredVersion' and architecture '$Architecture' not found. Looking for fallback version."
         }
 
