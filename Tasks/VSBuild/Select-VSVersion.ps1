@@ -15,7 +15,7 @@ function Select-VSVersion {
 
             # Error. Do not fallback from 15.0.
             if ($PreferredVersion -eq '15.0') {
-                throw (Get-VstsLocString -Key VSVersion0NotFound -ArgumentList $PreferredVersion)
+                throw (Get-VstsLocString -Key 'VSVersion15NotFound' -ArgumentList $PreferredVersion)
             }
 
             # Attempt to fallback.
@@ -28,7 +28,7 @@ function Select-VSVersion {
             if ((Get-VSPath -Version $version)) {
                 # Warn falling back.
                 if ($specificVersion) {
-                    Write-Warning (Get-VstsLocString -Key VSVersion0NotFoundFallbackVersion1 -ArgumentList $PreferredVersion, $version)
+                    Write-Warning (Get-VstsLocString -Key 'VSVersion0NotFoundFallbackVersion1' -ArgumentList $PreferredVersion, $version)
                 }
 
                 return $version
@@ -37,9 +37,9 @@ function Select-VSVersion {
 
         # Warn not found.
         if ($specificVersion) {
-            Write-Warning (Get-VstsLocString -Key VSVersion0NotFound -ArgumentList $PreferredVersion)
+            Write-Warning (Get-VstsLocString -Key 'VSVersion0NotFound' -ArgumentList $PreferredVersion)
         } else {
-            Write-Warning (Get-VstsLocString -Key VSNotFoundTry)
+            Write-Warning (Get-VstsLocString -Key 'VSNotFoundTry')
         }
     } finally {
         Trace-VstsLeavingInvocation $MyInvocation

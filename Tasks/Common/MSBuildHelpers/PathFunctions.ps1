@@ -254,13 +254,13 @@ function Select-MSBuildPath {
 
             # Do not fallback from 15.0.
             if ($PreferredVersion -eq '15.0') {
-                Write-Error (Get-VstsLocString -Key MSBuildNotFoundVersion0Architecture1TryDifferent -ArgumentList $PreferredVersion, $Architecture)
+                Write-Error (Get-VstsLocString -Key 'MSB_MSBuild15NotFoundionArchitecture0' -ArgumentList $Architecture)
                 return
             }
 
             # Attempt to fallback.
             $versions = $versions | Where-Object { $_ -ne '15.0' } # Fallback is only between 14.0-4.0.
-            Write-Verbose "Version '$PreferredVersion' and architecture '$Architecture' not found. Looking for fallback version."
+            Write-Verbose "Specified version '$PreferredVersion' and architecture '$Architecture' not found. Attempting to fallback."
         }
 
         # Look for the latest version of MSBuild.
@@ -268,7 +268,7 @@ function Select-MSBuildPath {
             if (($path = Get-MSBuildPath -Version $version -Architecture $Architecture)) {
                 # Warn falling back.
                 if ($specificVersion) {
-                    Write-Warning (Get-VstsLocString -Key UnableToFindMSBuildVersion0Architecture1FallbackVersion2 -ArgumentList $PreferredVersion, $Architecture, $version)
+                    Write-Warning (Get-VstsLocString -Key 'MSB_UnableToFindMSBuildVersion0Architecture1FallbackVersion2' -ArgumentList $PreferredVersion, $Architecture, $version)
                 }
 
                 return $path
@@ -277,9 +277,9 @@ function Select-MSBuildPath {
 
         # Error. Not found.
         if ($specificVersion) {
-            Write-Error (Get-VstsLocString -Key 'MSBuildNotFoundVersion0Architecture1TryDifferent' -ArgumentList $PreferredVersion, $Architecture)
+            Write-Error (Get-VstsLocString -Key 'MSB_MSBuildNotFoundVersion0Architecture1' -ArgumentList $PreferredVersion, $Architecture)
         } else {
-            Write-Error (Get-VstsLocString -Key 'MSBuildNotFound')
+            Write-Error (Get-VstsLocString -Key 'MSB_MSBuildNotFound')
         }
     } finally {
         Trace-VstsLeavingInvocation $MyInvocation

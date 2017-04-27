@@ -143,6 +143,7 @@
     "VSLocationDeprecated0": "ms-resource:loc.messages.VSLocationDeprecated0",
     "VSNotFoundTry": "ms-resource:loc.messages.VSNotFoundTry",
     "VSVersion0NotFound": "ms-resource:loc.messages.VSVersion0NotFound",
-    "VSVersion0NotFoundFallbackVersion1": "ms-resource:loc.messages.VSVersion0NotFoundFallbackVersion1"
+    "VSVersion0NotFoundFallbackVersion1": "ms-resource:loc.messages.VSVersion0NotFoundFallbackVersion1",
+    "VSVersion15NotFound": "ms-resource:loc.messages.VSVersion15NotFound"
   }
 }
