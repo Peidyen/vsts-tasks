@@ -1,5 +1,8 @@
 import tl = require('vsts-task-lib/task');
 import { ToolRunner } from 'vsts-task-lib/toolrunner';
+import * as path from 'path';
+
+tl.setResourcePath(path.join(__dirname, 'module.json'));
 
 /**
  * Finds the tool path for msbuild/xbuild based on specified msbuild version on Mac or Linux agent

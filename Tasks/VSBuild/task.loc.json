@@ -137,7 +137,6 @@
   },
   "messages": {
     "MSBuildLocationDeprecated0": "ms-resource:loc.messages.MSBuildLocationDeprecated0",
-    "MSBuildNotFoundVersion0Architecture1": "ms-resource:loc.messages.MSBuildNotFoundVersion0Architecture1",
     "MSBuildVersionDeprecated0": "ms-resource:loc.messages.MSBuildVersionDeprecated0",
     "UnexpectedVSVersion0": "ms-resource:loc.messages.UnexpectedVSVersion0",
     "VSLocationDeprecated0": "ms-resource:loc.messages.VSLocationDeprecated0",

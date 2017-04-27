@@ -33,6 +33,9 @@ describe('VSBuild Suite', function () {
         it('(Select-VSVersion) falls back from 14', (done) => {
             psr.run(path.join(__dirname, 'Select-VSVersion.FallsBackFrom14.ps1'), done);
         })
+        it('(Select-VSVersion) falls forward from 12', (done) => {
+            psr.run(path.join(__dirname, 'Select-VSVersion.FallsForwardFrom12.ps1'), done);
+        })
         it('(Select-VSVersion) finds latest', (done) => {
             psr.run(path.join(__dirname, 'Select-VSVersion.FindsLatest.ps1'), done);
         })
