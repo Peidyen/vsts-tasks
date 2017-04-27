@@ -35,7 +35,7 @@ foreach ($variableSet in $variableSets) {
     Register-Mock Get-VstsInput { 'Some input architecture' } -- -Name MSBuildArchitecture
     Register-Mock Get-SolutionFiles { 'Some solution 1', 'Some solution 2' } -- -Solution 'Some input solution'
     Register-Mock Format-MSBuildArguments { 'Some formatted arguments' } -- -MSBuildArguments 'Some input arguments' -Platform 'Some input platform' -Configuration 'Some input configuration' -MaximumCpuCount: $variableSet.MaximumCpuCount
-    Register-Mock Select-MSBuildPath { 'Some location' } -- -Method 'Some input method' -Location 'Some input location' -Version 'Some input version' -Architecture 'Some input architecture'
+    Register-Mock Select-MSBuildPath { 'Some location' } -- -Method 'Some input method' -Location 'Some input location' -PreferredVersion 'Some input version' -Architecture 'Some input architecture'
     Register-Mock Invoke-BuildTools { 'Some build output line 1', 'Some build output line 2' }
 
     # Act.
