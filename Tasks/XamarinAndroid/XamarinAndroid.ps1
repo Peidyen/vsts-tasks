@@ -57,7 +57,7 @@ try {
         Write-Verbose "msBuildArguments = $msBuildArguments"
     }
 
-    $msbuildLocation = Select-MSBuildPath -Method $msbuildLocationMethod -Location $msbuildLocation -Version $msbuildVersion -Architecture $msbuildArchitecture
+    $msbuildLocation = Select-MSBuildPath -Method $msbuildLocationMethod -Location $msbuildLocation -PreferredVersion $msbuildVersion -Architecture $msbuildArchitecture
 
     # build each project file
     Invoke-BuildTools -SolutionFiles $projectFiles -MSBuildLocation $msbuildLocation -MSBuildArguments $msBuildArguments -Clean:$clean
